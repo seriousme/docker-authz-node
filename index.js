@@ -19,7 +19,7 @@ const errorMsg = {
   'err': 'authorization plugin failed'
 }
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({'type': () => { return true }}))
 
 // intialization handshake
 // see https://docs.docker.com/engine/extend/plugin_api/#plugin-discovery
@@ -39,7 +39,13 @@ app.use('/Plugin.Activate', function (req, res, next) {
 //     "RequestHeader":     "Byte array containing the raw HTTP request header as a map[string][]string "
 // }
 app.use('/AuthZPlugin.AuthZReq', function (req, res, next) {
-  res.send(allowedMsg)
+  var msg = allowedMsg
+  console.log(req.body)
+  if (req.body.RequestUri === '/v1.26/containers/json') {
+    msg = deniedMsg
+    msg.msg = 'forbidden to list containers'
+  }
+  res.send(msg)
   next()
 })
 
@@ -57,6 +63,7 @@ app.use('/AuthZPlugin.AuthZReq', function (req, res, next) {
 //  }
 
 app.use('/AuthZPlugin.AuthZRes', function (req, res, next) {
+  console.log(req.body)
   res.send(allowedMsg)
   next()
 })
