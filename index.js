@@ -3,10 +3,11 @@
 
 const AuthzPort = 9000
 const express = require('express')
+const bodyParser = require('body-parser')
 const app = express()
 
 const handshakeMsg = {
-  'implements': ['authz']
+  'Implements': ['authz']
 }
 // example responses
 const allowedMsg = { 'allow': true }
@@ -17,6 +18,8 @@ const deniedMsg = {
 const errorMsg = {
   'err': 'authorization plugin failed'
 }
+
+app.use(bodyParser.json())
 
 // intialization handshake
 // see https://docs.docker.com/engine/extend/plugin_api/#plugin-discovery
